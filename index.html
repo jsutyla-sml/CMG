@@ -4,39 +4,250 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Content Matrix Generator</title>
-    
+
     <link rel="stylesheet" href="style.css">
     
     <link rel="manifest" href="manifest.json">
     
     <meta name="theme-color" content="#667eea">
-    
 </head>
 <body>
-<div id="formats" class="tab-content">
-    <div class="form-section">
-        <h3>Select Content Formats</h3>
-        <p style="margin-bottom: 20px;">Choose 10-15 formats to generate hooks. Each format creates unique content!</p>
-
-        <div class="stats">
-            <div class="stat-card">
-                <h3 id="selectedCount">0</h3>
-                <p>Formats Selected</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="potentialHooks">0</h3>
-                <p>Potential Hooks</p>
-            </div>
-        </div>
-
-        <div class="format-grid" id="formatGrid"></div>
-
-        <button class="btn" onclick="continueToGenerate()">Continue to Generator →</button>
-        <button class="btn btn-secondary" onclick="selectAll()">Select All</button>
-    </div>
-</div>    
+    
     <div class="container">
+        <div class="header">
+            <h1>🎯 Content Matrix Generator</h1>
+            <p>Generate hundreds of unique book marketing hooks in minutes</p>
         </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="angles">📝 Book Angles</div>
+            <div class="tab" data-tab="formats">🎨 Choose Formats</div>
+            <div class="tab" data-tab="generate">⚡ Generate Hooks</div>
+            <div class="tab" data-tab="scripts">🎬 Create Scripts</div>
+        </div>
+
+        <div id="angles" class="tab-content active">
+            <div class="tip-box">
+                <strong>💡 Pro Tip:</strong> Be SPECIFIC! "A love story" is weak. "A necromancer falls for the ghost hunting him" is powerful.
+            </div>
+
+            <div class="form-section" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px;">
+                <h3 style="margin-bottom: 15px;">🚀 Quick Start: Upload Your Book</h3>
+                <p style="margin-bottom: 20px; color: #6c757d;">Upload your manuscript, book outline, or synopsis and let AI analyze it to auto-fill all your book angles!</p>
+                
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <input type="file" id="bookFile" accept=".txt" style="display: none;" onchange="handleFileUpload(event)">
+                        <button class="btn" onclick="document.getElementById('bookFile').click()" style="width: 100%;">
+                            📄 Upload Book File (.txt only)
+                        </button>
+                    </div>
+                    
+                    <div style="text-align: center; color: #6c757d; font-weight: 600;">OR</div>
+                    
+                    <div style="flex: 1; min-width: 250px;">
+                        <button class="btn btn-secondary" onclick="showPasteModal()" style="width: 100%;">
+                            📋 Paste Book Text
+                        </button>
+                        <small style="display: block; margin-top: 8px; color: #6c757d;">Copy & paste your manuscript</small>
+                    </div>
+                </div>
+
+                <div id="uploadProgress" style="display: none; margin-top: 20px;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                    </div>
+                    <p id="uploadStatus" style="text-align: center; margin-top: 10px; color: #667eea; font-weight: 600;">Analyzing your book...</p>
+                </div>
+
+                <div id="uploadSuccess" style="display: none; margin-top: 20px; padding: 15px; background: #d4edda; border-left: 4px solid #28a745; border-radius: 8px;">
+                    <strong style="color: #155724;">✅ Success!</strong>
+                    <p style="color: #155724; margin-top: 5px;">Your book angles have been auto-filled. Review and adjust them below.</p>
+                </div>
+
+                <div id="uploadError" style="display: none; margin-top: 20px; padding: 15px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 8px;">
+                    <strong style="color: #721c24;">❌ Error</strong>
+                    <p id="errorMessage" style="color: #721c24; margin-top: 5px;"></p>
+                </div>
+            </div>
+
+            <div id="pasteModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
+                <div style="background: white; border-radius: 12px; padding: 30px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                    <h3 style="margin-bottom: 20px; color: #667eea;">Paste Your Book Text</h3>
+                    <p style="margin-bottom: 15px; color: #6c757d;">Paste your manuscript, synopsis, or outline below. The more context you provide, the better the results!</p>
+                    
+                    <textarea id="pastedText" style="width: 100%; min-height: 300px; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: monospace; font-size: 14px;" placeholder="Paste your book text here..."></textarea>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
+                        <button class="btn btn-secondary" onclick="closePasteModal()">Cancel</button>
+                        <button class="btn" onclick="analyzePastedText()">🔍 Analyze Text</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Define Your Book's Unique Angles</h3>
+                <p style="margin-bottom: 20px; color: #6c757d;">Review and refine the auto-generated angles below, or fill them in manually.</p>
+                
+                <div class="input-group">
+                    <label>📚 Book Title</label>
+                    <input type="text" id="bookTitle" placeholder="Enter your book title">
+                </div>
+
+                <div class="input-group">
+                    <label>✨ Reader Fantasy</label>
+                    <textarea id="readerFantasy" placeholder="What dream does your story fulfill? (e.g., 'escaping mundane life,' 'finding true love against all odds')"></textarea>
+                    <small>The aspirational experience readers crave</small>
+                </div>
+
+                <div class="input-group">
+                    <label>💔 Emotional Wreckage</label>
+                    <textarea id="emotionalWreckage" placeholder="The gut-punch moment that destroys readers (e.g., a betrayal, sacrifice, reunion)"></textarea>
+                    <small>The moment that makes readers ugly cry</small>
+                </div>
+
+                <div class="input-group">
+                    <label>🪞 Identity Mirror</label>
+                    <textarea id="identityMirror" placeholder="Who sees themselves in this? (e.g., 'burnt-out millennials,' 'second-chance romance lovers')"></textarea>
+                    <small>Your ideal reader's identity</small>
+                </div>
+
+<div class="input-group">
+                    <label>🎭 Culture Hook</label>
+                    <textarea id="cultureHook" placeholder="Unique references (e.g., 'Greek mythology meets cyberpunk,' 'K-drama tropes in Victorian England')"></textarea>
+                    <small>Pop culture mashups that grab attention</small>
+                </div>
+
+                <div class="input-group">
+                    <label>🩹 Personal Wound</label>
+                    <textarea id="personalWound" placeholder="The painful truth behind the story (even if fictionalized)"></textarea>
+                    <small>The vulnerability that makes it authentic</small>
+                </div>
+
+                <div class="input-group">
+                    <label>🎬 Cinematic Moment</label>
+                    <textarea id="cinematicMoment" placeholder="The most visual, movie-worthy scene"></textarea>
+                    <small>The scene you'd pay to see on the big screen</small>
+                </div>
+
+                <div class="input-group">
+                    <label>❓ "What If?" Setup</label>
+                    <textarea id="whatIfSetup" placeholder="Your high-concept premise (e.g., 'What if soulmates could only meet once?')"></textarea>
+                    <small>The intriguing premise in one sentence</small>
+                </div>
+
+                <div class="input-group">
+                    <label>🔄 Trope Twist</label>
+                    <textarea id="tropeTwist" placeholder="How you subvert expectations (e.g., 'The chosen one... refuses the call')"></textarea>
+                    <small>The familiar element you flip on its head</small>
+                </div>
+
+                <div class="input-group">
+                    <label>😱 Shock Factor</label>
+                    <textarea id="shockFactor" placeholder="The moment that makes readers gasp"></textarea>
+                    <small>The plot point no one sees coming</small>
+                </div>
+
+                <button class="btn" onclick="saveAngles()">Save Angles & Continue →</button>
+            </div>
+        </div>
+
+        <div id="formats" class="tab-content">
+            <div class="form-section">
+                <h3>Select Content Formats</h3>
+                <p style="margin-bottom: 20px;">Choose 10-15 formats to generate hooks. Each format creates unique content!</p>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3 id="selectedCount">0</h3>
+                        <p>Formats Selected</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="potentialHooks">0</h3>
+                        <p>Potential Hooks</p>
+                    </div>
+                </div>
+
+                <div class="format-grid" id="formatGrid"></div>
+
+                <button class="btn" onclick="continueToGenerate()">Continue to Generator →</button>
+                <button class="btn btn-secondary" onclick="selectAll()">Select All</button>
+            </div>
+        </div>
+
+        <div id="generate" class="tab-content">
+            <div class="form-section">
+                <h3>Generate Your Marketing Hooks</h3>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3 id="totalGenerated">0</h3>
+                        <p>Hooks Generated</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="formatCount">0</h3>
+                        <p>Formats Used</p>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="generateHooks()">⚡ Generate Hooks</button>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Generating your marketing hooks...</p>
+                </div>
+
+                <div id="hookOutput" class="hook-output"></div>
+
+                <div class="export-options" id="exportOptions" style="display: none;">
+                    <button class="btn" onclick="exportToText()">📄 Export to Text</button>
+                    <button class="btn btn-secondary" onclick="exportToCSV()">📊 Export to CSV</button>
+                    <button class="btn btn-secondary" onclick="copyAllHooks()">📋 Copy All</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="scripts" class="tab-content">
+            <div class="form-section">
+                <h3>Transform Hooks into Video Scripts</h3>
+                
+                <div class="tip-box">
+                    <strong>🎬 Script Formula:</strong> HOOK (3 sec) → BUILD (15-30 sec) → PAYOFF (10-20 sec) → CTA (5 sec)
+                </div>
+
+                <div class="input-group">
+                    <label>Choose Your Best Hook</label>
+                    <select id="hookSelect">
+                        <option value="">First generate some hooks...</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Video Length</label>
+                    <select id="videoLength">
+                        <option value="15">15 seconds (TikTok/Reels)</option>
+                        <option value="30" selected>30 seconds (TikTok/Reels)</option>
+                        <option value="60">60 seconds (TikTok/Reels/YouTube Shorts)</option>
+                        <option value="90">90 seconds (YouTube)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Platform Focus</label>
+                    <select id="platform">
+                        <option value="tiktok">TikTok</option>
+                        <option value="instagram">Instagram Reels</option>
+                        <option value="youtube">YouTube Shorts</option>
+                        <option value="universal">Universal</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="generateScript()">🎬 Generate Script</button>
+
+                <div id="scriptOutput" class="hook-output"></div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 
