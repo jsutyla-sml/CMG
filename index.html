@@ -13,7 +13,28 @@
     
 </head>
 <body>
-    
+<div id="formats" class="tab-content">
+    <div class="form-section">
+        <h3>Select Content Formats</h3>
+        <p style="margin-bottom: 20px;">Choose 10-15 formats to generate hooks. Each format creates unique content!</p>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3 id="selectedCount">0</h3>
+                <p>Formats Selected</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="potentialHooks">0</h3>
+                <p>Potential Hooks</p>
+            </div>
+        </div>
+
+        <div class="format-grid" id="formatGrid"></div>
+
+        <button class="btn" onclick="continueToGenerate()">Continue to Generator →</button>
+        <button class="btn btn-secondary" onclick="selectAll()">Select All</button>
+    </div>
+</div>    
     <div class="container">
         </div>
 
