@@ -1,5 +1,6 @@
 🎯 Content Matrix Generator
 Content Matrix Generator will help you create hooks to use for creating videos on TikTok, Instagram, and YouTube to help promote your writing.
+Thank you to John Creson for providing his version, originally written to use Claude.  I modified this to use Gemini as I do not have a Claude account and could not justify paying for yet another LLM.
 
 🚀 Deploying to Vercel
 Deploying this project to Vercel is an excellent choice , as their system is built for this exact project structure (static frontend + api folder). This guide will walk you through the steps to get your app live.
