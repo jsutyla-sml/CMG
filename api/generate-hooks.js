@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 
-// 1. FIXED: The API key is passed as an object
+// 1. Initialize the client with the API key
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export default async function handler(req, res) {
@@ -40,8 +40,8 @@ export default async function handler(req, res) {
       ]
     `;
 
-    // 2. FIXED: We call generateContent directly on the client
-    const result = await genAI.generateContent({
+    // 2. FIXED: The method is on genAI.models
+    const result = await genAI.models.generateContent({
       model: "gemini-1.5-flash",
       contents: prompt,
     });
