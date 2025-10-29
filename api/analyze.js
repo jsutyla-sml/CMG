@@ -1,8 +1,8 @@
-import { GoogleGenerativeAI } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
 // Initialize the Gemini client.
 // The API key is automatically read from the GEMINI_API_KEY environment variable.
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY);
 
 /**
  * This is the main serverless function handler.
