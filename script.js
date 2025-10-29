@@ -432,7 +432,7 @@ async function analyzeBookWithGemini(bookText) {
             body: JSON.stringify({ bookText: bookText.substring(0, 100000) }) 
         });
 
-        updateProgress(60, 'Gemini is analyzing your book...');
+        updateProgress(60, 'Be patient! Gemini is analyzing your book...');
 
  // This code checks if the error is JSON or plain text
 if (!response.ok) {
