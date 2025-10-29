@@ -1,24 +1,19 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize the Gemini client
-const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY);
+// 1. FIXED: The API key is passed as an object
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // 1. Get the angles and selected formats from the client
   const { bookAngles, selectedFormats } = req.body;
-
   if (!bookAngles || !selectedFormats || selectedFormats.length === 0) {
     return res.status(400).json({ error: 'Missing bookAngles or selectedFormats' });
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    // 2. Create the prompt
     const prompt = `
       You are a world-class book marketing expert, specializing in viral social media hooks for authors (like for TikTok, Reels, and Shorts).
 
@@ -45,16 +40,18 @@ export default async function handler(req, res) {
       ]
     `;
 
-    // 3. Call Gemini
-    const result = await model.generateContent(prompt);
+    // 2. FIXED: We call generateContent directly on the client
+    const result = await genAI.generateContent({
+      model: "gemini-1.5-flash",
+      contents: prompt,
+    });
+    
     const response = await result.response;
     const aiText = response.text();
 
-    // 4. Clean and parse the response
     const cleanedText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
     const generatedHooks = JSON.parse(cleanedText);
 
-    // 5. Send the array of hooks back to the frontend
     res.status(200).json(generatedHooks);
 
   } catch (error) {

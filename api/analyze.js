@@ -1,32 +1,19 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize the Gemini client.
-// The API key is automatically read from the GEMINI_API_KEY environment variable.
-const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY);
+// 1. FIXED: The API key is passed as an object
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-/**
- * This is the main serverless function handler.
- * Vercel and Netlify use this format.
- */
 export default async function handler(req, res) {
-  // 1. We only want to accept POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // 2. Get the book text from the frontend's request
   const { bookText } = req.body;
-
   if (!bookText || bookText.trim() === '') {
     return res.status(400).json({ error: 'bookText is required' });
   }
 
   try {
-    // 3. Get the generative model
-    // You can use "gemini-1.5-flash" for speed or "gemini-1.5-pro" for quality
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    // 4. Create the prompt (I've adapted your excellent prompt from the HTML)
     const prompt = `
       Analyze this book and extract the following marketing angles.
       Be SPECIFIC and compelling.
@@ -54,19 +41,19 @@ export default async function handler(req, res) {
       ---
     `;
 
-    // 5. Send the prompt to Gemini
-    const result = await model.generateContent(prompt);
+    // 2. FIXED: We call generateContent directly on the client
+    // and pass the model name and prompt in.
+    const result = await genAI.generateContent({
+      model: "gemini-1.5-flash",
+      contents: prompt,
+    });
+
     const response = await result.response;
     const aiText = response.text();
 
-    // 6. Clean up the response from Gemini
-    // It sometimes wraps the JSON in backticks (```json ... ```)
     const cleanedText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
-
-    // 7. Parse the JSON string into a real object
     const angles = JSON.parse(cleanedText);
 
-    // 8. Send the JSON object back to the frontend
     res.status(200).json(angles);
 
   } catch (error) {
