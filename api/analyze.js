@@ -1,6 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
 
-// 1. Initialize the client with the API key
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export default async function handler(req, res) {
@@ -41,14 +40,15 @@ export default async function handler(req, res) {
       ---
     `;
 
-    // 2. FIXED: The method is on genAI.models
     const result = await genAI.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
     });
 
-    const response = await result.response;
-    const aiText = response.text();
+    // --- [FIXED LINES] ---
+    const response = result; // The result *is* the response
+    const aiText = response.text; // It's a property, not a function
+    // --- [END OF FIX] ---
 
     const cleanedText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
     const angles = JSON.parse(cleanedText);
