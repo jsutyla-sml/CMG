@@ -42,7 +42,7 @@ export default async function handler(req, res) {
 
     // 2. FIXED: The method is on genAI.models
     const result = await genAI.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
     });
     
