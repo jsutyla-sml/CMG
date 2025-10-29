@@ -434,11 +434,21 @@ async function analyzeBookWithGemini(bookText) {
 
         updateProgress(60, 'Gemini is analyzing your book...');
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to get a response from the server.');
-        }
+ // This code checks if the error is JSON or plain text
+if (!response.ok) {
+    let errorMessage;
+    const contentType = response.headers.get('content-type');
 
+    if (contentType && contentType.includes('application/json')) {
+        // It's a JSON error from our API
+        const errorData = await response.json();
+        errorMessage = errorData.error;
+    } else {
+        // It's an HTML error from Vercel (like the 500 error)
+        errorMessage = `Server Error: ${response.status} ${response.statusText}. Check Vercel logs.`;
+    }
+    throw new Error(errorMessage);
+}
         const angles = await response.json();
 
         updateProgress(80, 'Extracting book angles...');
